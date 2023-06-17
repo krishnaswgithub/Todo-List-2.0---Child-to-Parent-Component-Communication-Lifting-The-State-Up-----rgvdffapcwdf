@@ -1,12 +1,11 @@
 import React from "react";
 import ListRender from "./ListRender";
 
-const Today = (props) => {
+const Today = ({ list }) => {
   const date = new Date();
-  
   return (
     <div id="today-list">
-      <ListRender list={} />
+      <ListRender list={list} />
     </div>
   );
 };
