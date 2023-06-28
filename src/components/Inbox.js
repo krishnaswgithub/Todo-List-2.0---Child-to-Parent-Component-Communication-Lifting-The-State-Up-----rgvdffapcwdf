@@ -1,78 +1,58 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
-var curr = new Date();
+const Inbox = (props) => {
+ 
+  const [newTask, setTask] = useState(false);
+ 
+  const [ele, setele] = useState(null);
+  const [added, setadded] =useState(4);
+  const text = useRef(null);
+  const ddate = useRef(null);
+  function updateText(e){
+    e.preventDefault();
+    setele({number: added, title: text.current.value, date: (new Date(ddate.current.value)).toLocaleDateString("en-US")})
+}
 
-curr.setDate(curr.getDate());
-
-var date = curr.toISOString().substring(0, 10);
-const object = { title: "", date: date };
-const Inbox = ({ list, append }) => {
-  const [newTask, setNewTask] = useState(false);
-  const [newTodo, setNewTodo] = useState(object);
-  function addNewTask() {
-    setNewTask(true);
-  }
-  function cancelTask() {
-    setNewTask(false);
-    setNewTodo(object);
-  }
-  function handleChange(event) {
-    let id = event.target.id;
-    let value = event.target.value;
-
-    setNewTodo((obj) => ({ ...obj, [id]: value }));
-    return;
-  }
-  function handleClick(event) {
-    event.preventDefault();
-    const { title, date } = newTodo;
-    // if (!title || !date) return;
-    let currentDate = new Date(date);
-    append({ title, date: currentDate });
-    setNewTask(false);
-    setNewTodo(object);
-  }
-
+useEffect(()=>{
+    if (ele) {
+        props.append(ele);
+    }
+},[ele])
+  
   return (
+    
     <div>
       <h3>Inbox</h3>
       {!newTask && (
-        <button className="new" onClick={addNewTask} id="add-new">
+        <button className="new" onClick={()=>{setTask(true)}} id='add-new'>
           +Add New
         </button>
       )}
       {newTask && (
         <form className="newtask-box">
-          <input
-            type="text"
-            id="title"
-            value={newTodo.title}
-            onChange={handleChange}
-          ></input>
+          <input type="text" id="title" ref={text}></input>
           <div className="buttons">
-            <button className="new" id="add-list" onClick={handleClick}>
+            <button className="new" id="add-list" onClick={(e)=>{updateText(e)}}>
               Add Task
             </button>
-            <button className="new" onClick={cancelTask}>
+            <button className="new" onClick={()=>{setTask(false)}}>
               Cancel
             </button>
             <input
               type="date"
-              onChange={handleChange}
-              defaultValue={date}
+              ref={ddate}
+              defaultValue="2022-09-27"
               id="date"
             ></input>
           </div>
         </form>
       )}
       <div id="inbox">
-        {list.map((list, index) => {
+        {props.list.map((list) => {
           return (
-            <div className="box" key={index}>
+            <div className="box" key={list.number}>
               <div className="task">
-                <div id="code">
-                  {list.title} ({list.date.toLocaleDateString()})
-                </div>
+                {list.title} ({list.date})
               </div>
             </div>
           );
